@@ -117,7 +117,7 @@ RUN buildDeps='wget gcc make autoconf libc-dev libmemcached-dev libmagickwand-de
     && rm -rf /tmp/composer-setup.php \
     # Clean up
     && rm -rf /tmp/pear \
-    && apt-get purge -y --auto-remove $buildDeps \
+    && apt-get purge -y --auto-remove $buildDeps php8.0-dev \
     && apt-get clean \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
