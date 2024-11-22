@@ -42,3 +42,9 @@ Default web root:
 ```
 /usr/share/nginx/html
 ```
+
+## REFS
+https://www.oracle.com/br/database/technologies/instant-client/linux-x86-64-downloads.html
+https://pecl.php.net/package/pdo_oci
+https://getcomposer.org/download/
+https://pecl.php.net/package/oci8
