@@ -5,7 +5,7 @@ LABEL maintainer="Felipe Cavalcanti"
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NGINX_VERSION=1.27.2-1~bookworm
-ENV PHP_VERSION=8.0
+ENV PHP_VERSION=7.4
 ENV php_conf=/etc/php/${PHP_VERSION}/fpm/php.ini
 ENV fpm_conf=/etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 ENV COMPOSER_VERSION=2.8.3
@@ -73,8 +73,8 @@ RUN buildDeps='wget gcc make autoconf libc-dev libmemcached-dev libmagickwand-de
     ENV LD_LIBRARY_PATH=/usr/lib/oracle/instantclient_23_6
 
     # Instalar o driver OCI8 do PHP https://pecl.php.net/package/pdo_oci | https://pecl.php.net/package/oci8
-    RUN curl -sSL https://pecl.php.net/get/oci8-3.0.1.tgz | tar xz \
-    && cd oci8-3.0.1 \
+    RUN curl -sSL https://pecl.php.net/get/oci8-2.2.0.tgz | tar xz \
+    && cd oci8-2.2.0 \
     && phpize \
     && ./configure --with-oci8=instantclient,/usr/lib/oracle/instantclient_23_6 \
     && make && make install \
