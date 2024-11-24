@@ -5,7 +5,7 @@ LABEL maintainer="Felipe Cavalcanti"
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NGINX_VERSION=1.27.2-1~bookworm
-ENV PHP_VERSION=7.4
+ENV PHP_VERSION=7.3
 ENV php_conf=/etc/php/${PHP_VERSION}/fpm/php.ini
 ENV fpm_conf=/etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 ENV COMPOSER_VERSION=2.8.3
