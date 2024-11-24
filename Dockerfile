@@ -5,8 +5,9 @@ LABEL maintainer="Felipe Cavalcanti"
 # Let the container know that there is no tty
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NGINX_VERSION=1.27.2-1~bookworm
-ENV php_conf=/etc/php/8.0/fpm/php.ini
-ENV fpm_conf=/etc/php/8.0/fpm/pool.d/www.conf
+ENV PHP_VERSION=8.0
+ENV php_conf=/etc/php/${PHP_VERSION}/fpm/php.ini
+ENV fpm_conf=/etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 ENV COMPOSER_VERSION=2.8.3
 
 # Install Basic Requirements
@@ -40,24 +41,24 @@ RUN buildDeps='wget gcc make autoconf libc-dev libmemcached-dev libmagickwand-de
             libmemcached11 \
             libaio1 \
             nginx=${NGINX_VERSION} \
-            php8.0-fpm \
-            php8.0-cli \
-            php8.0-bcmath \
-            php8.0-dev \
-            php8.0-common \
-            php8.0-opcache \
-            php8.0-readline \
-            php8.0-mbstring \
-            php8.0-curl \
-            php8.0-gd \
-            php8.0-imagick \
-            php8.0-mysql \
-            php8.0-zip \
-            php8.0-pgsql \
-            php8.0-intl \
-            php8.0-xml \
+            php${PHP_VERSION}-fpm \
+            php${PHP_VERSION}-cli \
+            php${PHP_VERSION}-bcmath \
+            php${PHP_VERSION}-dev \
+            php${PHP_VERSION}-common \
+            php${PHP_VERSION}-opcache \
+            php${PHP_VERSION}-readline \
+            php${PHP_VERSION}-mbstring \
+            php${PHP_VERSION}-curl \
+            php${PHP_VERSION}-gd \
+            php${PHP_VERSION}-imagick \
+            php${PHP_VERSION}-mysql \
+            php${PHP_VERSION}-zip \
+            php${PHP_VERSION}-pgsql \
+            php${PHP_VERSION}-intl \
+            php${PHP_VERSION}-xml \
             php-pear \
-    && pecl -d php_suffix=8.0 install -o -f redis memcached
+    && pecl -d php_suffix=${PHP_VERSION} install -o -f redis memcached
 
     # Install Oracle Instant Client + SDK https://www.oracle.com/br/database/technologies/instant-client/linux-x86-64-downloads.html
     RUN curl -L https://download.oracle.com/otn_software/linux/instantclient/2360000/instantclient-basiclite-linux.x64-23.6.0.24.10.zip -o instantclient.zip \
@@ -77,8 +78,8 @@ RUN buildDeps='wget gcc make autoconf libc-dev libmemcached-dev libmagickwand-de
     && phpize \
     && ./configure --with-oci8=instantclient,/usr/lib/oracle/instantclient_23_6 \
     && make && make install \
-    && echo "extension=oci8.so" > /etc/php/8.0/cli/conf.d/20-oci8.ini \
-    && echo "extension=oci8.so" > /etc/php/8.0/fpm/conf.d/20-oci8.ini
+    && echo "extension=oci8.so" > /etc/php/${PHP_VERSION}/cli/conf.d/20-oci8.ini \
+    && echo "extension=oci8.so" > /etc/php/${PHP_VERSION}/fpm/conf.d/20-oci8.ini
     
     RUN mkdir -p /run/php \
     && pip install --break-system-packages wheel \
@@ -91,7 +92,7 @@ RUN buildDeps='wget gcc make autoconf libc-dev libmemcached-dev libmagickwand-de
     && sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" ${php_conf} \
     && sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" ${php_conf} \
     && sed -i -e "s/variables_order = \"GPCS\"/variables_order = \"EGPCS\"/g" ${php_conf} \
-    && sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/8.0/fpm/php-fpm.conf \
+    && sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf \
     && sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" ${fpm_conf} \
     && sed -i -e "s/pm.max_children = 5/pm.max_children = 4/g" ${fpm_conf} \
     && sed -i -e "s/pm.start_servers = 2/pm.start_servers = 3/g" ${fpm_conf} \
@@ -100,15 +101,15 @@ RUN buildDeps='wget gcc make autoconf libc-dev libmemcached-dev libmagickwand-de
     && sed -i -e "s/pm.max_requests = 500/pm.max_requests = 200/g" ${fpm_conf} \
     && sed -i -e "s/www-data/nginx/g" ${fpm_conf} \
     && sed -i -e "s/^;clear_env = no$/clear_env = no/" ${fpm_conf} \
-    && echo "extension=redis.so" > /etc/php/8.0/mods-available/redis.ini \
-    && echo "extension=memcached.so" > /etc/php/8.0/mods-available/memcached.ini \
-    && echo "extension=imagick.so" > /etc/php/8.0/mods-available/imagick.ini \
-    && ln -sf /etc/php/8.0/mods-available/redis.ini /etc/php/8.0/fpm/conf.d/20-redis.ini \
-    && ln -sf /etc/php/8.0/mods-available/redis.ini /etc/php/8.0/cli/conf.d/20-redis.ini \
-    && ln -sf /etc/php/8.0/mods-available/memcached.ini /etc/php/8.0/fpm/conf.d/20-memcached.ini \
-    && ln -sf /etc/php/8.0/mods-available/memcached.ini /etc/php/8.0/cli/conf.d/20-memcached.ini \
-    && ln -sf /etc/php/8.0/mods-available/imagick.ini /etc/php/8.0/fpm/conf.d/20-imagick.ini \
-    && ln -sf /etc/php/8.0/mods-available/imagick.ini /etc/php/8.0/cli/conf.d/20-imagick.ini \
+    && echo "extension=redis.so" > /etc/php/${PHP_VERSION}/mods-available/redis.ini \
+    && echo "extension=memcached.so" > /etc/php/${PHP_VERSION}/mods-available/memcached.ini \
+    && echo "extension=imagick.so" > /etc/php/${PHP_VERSION}/mods-available/imagick.ini \
+    && ln -sf /etc/php/${PHP_VERSION}/mods-available/redis.ini /etc/php/${PHP_VERSION}/fpm/conf.d/20-redis.ini \
+    && ln -sf /etc/php/${PHP_VERSION}/mods-available/redis.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-redis.ini \
+    && ln -sf /etc/php/${PHP_VERSION}/mods-available/memcached.ini /etc/php/${PHP_VERSION}/fpm/conf.d/20-memcached.ini \
+    && ln -sf /etc/php/${PHP_VERSION}/mods-available/memcached.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-memcached.ini \
+    && ln -sf /etc/php/${PHP_VERSION}/mods-available/imagick.ini /etc/php/${PHP_VERSION}/fpm/conf.d/20-imagick.ini \
+    && ln -sf /etc/php/${PHP_VERSION}/mods-available/imagick.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-imagick.ini \
     # Install Composer https://getcomposer.org/download/
     && curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
     && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
@@ -117,7 +118,7 @@ RUN buildDeps='wget gcc make autoconf libc-dev libmemcached-dev libmagickwand-de
     && rm -rf /tmp/composer-setup.php \
     # Clean up
     && rm -rf /tmp/pear \
-    && apt-get purge -y --auto-remove $buildDeps php8.0-dev \
+    && apt-get purge -y --auto-remove $buildDeps php${PHP_VERSION}-dev \
     && apt-get clean \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
